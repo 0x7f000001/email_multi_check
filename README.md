@@ -32,17 +32,12 @@ pip install .\dist\email_verifier-1.0.6-py3-none-any.whl
 
 ## Dependencies
 
-- dnspython >= 2.6.1
-- pydantic >= 2.8.2
-- idna >= 3.7
-- requests >= 2.32.3
+- dnspython >= 2.8.0
+- pydantic >= 2.11.10
+- idna >= 3.10
+- requests >= 2.32.5
 
 Install them with:
-
-```bash
-pip install dnspython pydantic idna requests
-```
-...or install using:
 
 ```bash
 pip install -r requirements.txt

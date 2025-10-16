@@ -255,6 +255,7 @@ if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
+</details>
 
 Run the API:
 
@@ -297,7 +298,8 @@ RawContentLength  : 6439
 
 <details>
 <summary>Example out JSON:</summary>
-```json
+
+```python
 [
   {
     "system_id": "1.0.6",
@@ -588,6 +590,7 @@ RawContentLength  : 6439
     "data": "MAIL/RCPT error: timed out, port: 465"
   }
 ]
+
 ```
 </details>
 
@@ -602,12 +605,14 @@ RawContentLength  : 6439
    ```
 <details>
 <summary>Example out JSON:</summary>
+
 ```json
 {
   "message": "Valid syntax",
   "status": true
 }
 ```
+
 </details>
 
 4. Syntax verification (invalid email):

@@ -1,7 +1,4 @@
-
-![2252c844-7179-44ab-9af7-6c6fca2baa56](https://github.com/user-attachments/assets/0a26d834-6606-4903-a996-b5458a7d6e99)
-
-
+![2252c844-7179-44ab-9af7-6c6fca2baa56](https://github.com/user-attachments/assets/fb22f45d-d60a-4952-b2dd-8198a5729ff3)
 
 # Email Verifier
 
@@ -125,6 +122,8 @@ Parameters:
 - `-p`, `--ports`: Comma-separated SMTP ports (default: 25,2525,587,465).
 - `-m`, `--mode`: Verification mode (default: all). Options: rcpt, vrfy, expn, mf, web, all.
 
+>*use your existing email address to send*
+
 Detailed examples for all iterations (combinations of modes and ports):
 
 1. All modes on default ports:
@@ -151,28 +150,35 @@ Detailed examples for all iterations (combinations of modes and ports):
    ```bash
    python test_dns_smtp.py -c test@gmail.com -e info@yourdomain.com -p 465 -m mf
    ```
-
 6. Web mode (no ports needed, requires url.cfg):
    ```bash
    python test_dns_smtp.py -c test@mail.ru -e info@yourdomain.com -m web
    ```
+    <details>
+    <summary>Example out True:</summary>
+    
+    ```bash   
+    INFO:__main__:MX records for mail.ru: ['mxs.mail.ru.']
+    INFO:__main__:Email verification (web): email=support@mail.ru, message=Valid email, status=True, MX=[], data=Web auth response: exists=True
+    system_id='1.0.6' email='support@mail.ru' message='Valid email' status=True MX=[] smtplib_code=None method_code=None method='web' web_auth_code=None data='Web auth response: exists=True'
+    ```
+    
+    </details>
+    <details>
+    <summary>Example out False:</summary>
 
+    ```bash
+    INFO:__main__:MX records for mail.ru: ['mxs.mail.ru.']
+    INFO:__main__:Email verification (web): email=6tgfjkl@mail.ru, message=No such user!, status=False, MX=[], data=Web auth response: exists=False, alternatives=['6tgfjkl@bk.ru', '6tgfjkl00@mail.ru', '6tgfjkl@inbox.ru', '6tgfjkl2025@mail.ru',        '6tgfjkl@list.ru', '6tgfjkl2026@mail.ru', '6tgfjkl@internet.ru', '6tgfjkl.00@mail.ru']
+    system_id='1.0.6' email='6tgfjkl@mail.ru' message='No such user!' status=False MX=[] smtplib_code=None method_code=None method='web' web_auth_code=100 data="Web auth response: exists=False, alternatives=['6tgfjkl@bk.ru', '6tgfjkl00@mail.ru',     '6tgfjkl@inbox.ru', '6tgfjkl2025@mail.ru', '6tgfjkl@list.ru', '6tgfjkl2026@mail.ru', '6tgfjkl@internet.ru', '6tgfjkl.00@mail.ru']"
+    ```
+    </details>
+    
 7. All modes on port 25:
    ```bash
    python test_dns_smtp.py -c test@gmail.com -e info@yourdomain.com -p 25 -m all
    ```
-
-8. Web mode for non-existing email:
-   ```bash
-   python test_dns_smtp.py -c nonexistent123456@mail.ru -e info@yourdomain.com -m web
-   ```
-
-9. All modes for mail.ru email (includes web auth):
-   ```bash
-   python test_dns_smtp.py -c test@mail.ru -e info@yourdomain.com -p 25,587 -m all
-   ```
-
-10. RCPT mode without sender email (uses default):
+8. RCPT mode without sender email (uses default=info@yourdomain.com):
     ```bash
     python test_dns_smtp.py -c test@gmail.com -p 25 -m rcpt
     ```
@@ -603,15 +609,15 @@ RawContentLength  : 6439
    ```
    curl "http://localhost:8000/verify/syntax?email=test@gmail.com"
    ```
-<details>
-<summary>Example out JSON:</summary>
+    <details>
+    <summary>Example out JSON:</summary>
 
-```json
-{
-  "message": "Valid syntax",
-  "status": true
-}
-```
+    ```python
+    {
+      "message": "Valid syntax",
+      "status": true
+    }
+    ```
 
 </details>
 
@@ -619,22 +625,92 @@ RawContentLength  : 6439
    ```
    curl "http://localhost:8000/verify/syntax?email=invalid@"
    ```
+   <details>
+   <summary>Example out JSON:</summary>
 
+   ```python
+    {
+      "system_id": "1.0.6",
+      "email": "invalid@",
+      "message": "Bad Syntax",
+      "status": false,
+      "MX": [],
+      "smtplib_code": null,
+      "method_code": null,
+      "method": null,
+      "web_auth_code": null,
+      "data": "Email does not match required pattern"
+    }
+   ```
+    </details>
+    
 5. Domain verification (MX records):
    ```
    curl "http://localhost:8000/verify/domain?email=test@gmail.com"
    ```
+   <details>
+   <summary>Example out JSON:</summary>
+   
+   ```python
+    {
+      "valid": true,
+      "mx_servers": [
+        "alt3.gmail-smtp-in.l.google.com.",
+        "gmail-smtp-in.l.google.com.",
+        "alt4.gmail-smtp-in.l.google.com.",
+        "alt1.gmail-smtp-in.l.google.com.",
+        "alt2.gmail-smtp-in.l.google.com."
+      ]
+    }
+    ```
+    </details>
 
 6. Web verification (for mail.ru, non-existing email):
    ```
    curl "http://localhost:8000/verify/web?email=nonexistent123456@mail.ru"
    ```
+   <details>
+   <summary>Example out JSON:</summary>
+   
+   ```python
+    {
+      "system_id": "1.0.6",
+      "email": "nonexistent123456@mail.ru",
+      "message": "No such user!",
+      "status": false,
+      "MX": [],
+      "smtplib_code": null,
+      "method_code": null,
+      "method": "web",
+      "web_auth_code": 100,
+      "data": "Web auth response: exists=False, alternatives=['nonexistent123456@bk.ru', 'nonexistent123456@inbox.ru', 'nonexistent123456@list.ru', 'nonexistent123456@internet.ru']"
+    }
+    ```
+    </details>
 
 7. Web verification (for mail.ru, existing email):
    ```
    curl "http://localhost:8000/verify/web?email=existinguser@mail.ru"
    ```
-
+   <details>
+   <summary>Example out JSON:</summary>
+   
+   ```python
+   {
+      "system_id": "1.0.6",
+      "email": "support@mail.ru",
+      "message": "Valid email",
+      "status": true,
+      "MX": [],
+      "smtplib_code": null,
+      "method_code": null,
+      "method": "web",
+      "web_auth_code": null,
+      "data": "Web auth response: exists=True"
+    }
+    ```
+    </details>
+    
 8. RCPT method on port 25:
    ```
    curl "http://localhost:8000/verify/rcpt?email=test@gmail.com&sender_email=info@yourdomain.com&port=25"
@@ -660,39 +736,35 @@ RawContentLength  : 6439
     curl "http://localhost:8000/verify?email=test@mail.ru&sender_email=info@yourdomain.com&ports=25"
     ```
 
-13. Syntax verification for international domain:
-    ```
-    curl "http://localhost:8000/verify/syntax?email=user@домен.рф"
-    ```
-
-14. Domain verification for invalid domain:
+13. Domain verification for invalid domain:
     ```
     curl "http://localhost:8000/verify/domain?email=test@invaliddomain"
     ```
 
-15. RCPT method with custom sender email and port:
+14. RCPT method with custom sender email and port:
     ```
     curl "http://localhost:8000/verify/rcpt?email=test@gmail.com&sender_email=custom@sender.com&port=587"
     ```
-
-Example JSON response for full verification:
-```json
-[
-  {
-    "system_id": "1.0.6",
-    "email": "test@gmail.com",
-    "message": "Valid email",
-    "status": true,
-    "MX": ["gmail-smtp-in.l.google.com.", "alt1.gmail-smtp-in.l.google.com."],
-    "smtplib_code": 250,
-    "method_code": 250,
-    "method": "rcpt",
-    "web_auth_code": null,
-    "data": "RCPT code: 250, port: 25"
-  },
-  ...
-]
-```
+    <details>
+    <summary>Example out JSON:</summary>
+   
+    ```python
+     [
+       {
+         "system_id": "1.0.6",
+         "email": "test@gmail.com",
+         "message": "Valid email",
+         "status": true,
+         "MX": ["gmail-smtp-in.l.google.com.", "alt1.gmail-smtp-in.l.google.com."],
+         "smtplib_code": 250,
+         "method_code": 250,
+         "method": "rcpt",
+         "web_auth_code": null,
+         "data": "RCPT code: 250, port: 587"
+       },
+     ]
+     ```
+    </details>
 
 ## Configuration for Web Verification
 

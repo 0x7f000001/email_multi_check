@@ -185,6 +185,12 @@ You can integrate the package with FastAPI to create a REST API for email verifi
 <summary>Example script (`test_api.py`):</summary>
 (The code is structured in such a way for better understanding)
 
+  ```bash
+  python --version
+  Python 3.11.9
+  pip install fastapi==0.118.0 uvicorn=0.37.0
+  ```
+
 ```python
 from fastapi import FastAPI
 from email_verifier import verify_email, verify_email_syntax, verify_email_domain, verify_email_web_auth, verify_email_rcpt, verify_email_vrfy, verify_email_expn, verify_email_mail_from

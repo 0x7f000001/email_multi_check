@@ -11,7 +11,7 @@ import idna
 import time
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO) # level INFO & DEBUG
 logger = logging.getLogger(__name__)
 
 # Email regex pattern (improved to be more RFC 5322 compliant)
@@ -62,7 +62,9 @@ def load_requests_config(requests_file: str, email: str) -> Tuple[str, dict, dic
 
 def verify_email_syntax(email: str) -> EmailVerificationResult:
     """Verify email syntax using regex."""
+    logger.debug(f"Verifying syntax for email: {email}")
     if not re.match(EMAIL_REGEX, email, re.IGNORECASE):
+        logger.debug(f"Email {email} does not match regex pattern")
         return EmailVerificationResult(
             system_id="1.0.6",
             email=email,
@@ -71,8 +73,15 @@ def verify_email_syntax(email: str) -> EmailVerificationResult:
             MX=[],
             data="Email does not match required pattern"
         )
-    
-    return None
+    logger.debug(f"Email {email} matches regex pattern")   
+    return EmailVerificationResult(
+        system_id="1.0.6",
+        email=email,
+        message="Valid syntax",
+        status=True,
+        MX=[],
+        method="syntax"
+    )
 
 def verify_email_domain(email: str) -> Tuple[bool, List[str]]:
     """Verify email domain by checking MX records."""
@@ -87,7 +96,7 @@ def verify_email_domain(email: str) -> Tuple[bool, List[str]]:
         answers = dns.resolver.resolve(domain, "MX")
         mx_servers = [str(answer.exchange) for answer in answers]
         return True, mx_servers
-    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, IndexError, UnicodeError, dns.resolver.ResolverError) as e:
+    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, IndexError, UnicodeError) as e:
         logger.error(f"Domain verification failed for {domain}: {str(e)}")
         return False, []
 

@@ -1,4 +1,4 @@
-![2252c844-7179-44ab-9af7-6c6fca2baa56](https://github.com/user-attachments/assets/fb22f45d-d60a-4952-b2dd-8198a5729ff3)
+![13d6e41b-a41b-4c55-8554-2b1f5379ff7c](https://github.com/user-attachments/assets/042a824d-99f6-4d8b-8bbd-b83265f9dfab)
 
 # Email Verifier
 

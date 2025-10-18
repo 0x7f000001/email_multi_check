@@ -60,13 +60,13 @@ def load_requests_config(requests_file: str, email: str) -> Tuple[str, dict, dic
     
     return method, headers, params
 
-def verify_email_syntax(email: str) -> EmailVerificationResult:
+def verify_email_syntax(email: str, allow_success: bool = False) -> Optional[EmailVerificationResult]:
     """Verify email syntax using regex."""
     logger.debug(f"Verifying syntax for email: {email}")
     if not re.match(EMAIL_REGEX, email, re.IGNORECASE):
         logger.debug(f"Email {email} does not match regex pattern")
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             message="Bad Syntax",
             status=False,
@@ -74,15 +74,17 @@ def verify_email_syntax(email: str) -> EmailVerificationResult:
             data="Email does not match required pattern"
         )
     logger.debug(f"Email {email} matches regex pattern")   
-    return EmailVerificationResult(
-        system_id="1.0.6",
+    if allow_success:
+        return EmailVerificationResult(
+        system_id="1.0.7",
         email=email,
         message="Valid syntax",
         status=True,
         MX=[],
         method="syntax"
     )
-
+    return None
+    
 def verify_email_domain(email: str) -> Tuple[bool, List[str]]:
     """Verify email domain by checking MX records."""
     try:
@@ -122,7 +124,7 @@ def verify_email_rcpt(email: str, sender_email: str, mx_servers: List[str], port
         )
         
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             smtplib_code=250,
             method_code=code,
@@ -135,7 +137,7 @@ def verify_email_rcpt(email: str, sender_email: str, mx_servers: List[str], port
     except (smtplib.SMTPException, ConnectionError, TimeoutError) as e:
         logger.error(f"RCPT verification failed for {email} on port {port}: {str(e)}")
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             message="SMTP connection failed",
             status=False,
@@ -154,7 +156,7 @@ def verify_email_vrfy(email: str, sender_email: str, mx_servers: List[str], port
         if not hasattr(server, 'vrfy'):
             server.quit()
             return EmailVerificationResult(
-                system_id="1.0.6",
+                system_id="1.0.7",
                 email=email,
                 message="VRFY not supported",
                 status=False,
@@ -174,7 +176,7 @@ def verify_email_vrfy(email: str, sender_email: str, mx_servers: List[str], port
         )
         
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             smtplib_code=250,
             method_code=code,
@@ -187,7 +189,7 @@ def verify_email_vrfy(email: str, sender_email: str, mx_servers: List[str], port
     except (smtplib.SMTPException, ConnectionError, TimeoutError) as e:
         logger.error(f"VRFY verification failed for {email} on port {port}: {str(e)}")
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             message="SMTP connection failed",
             status=False,
@@ -206,7 +208,7 @@ def verify_email_expn(email: str, sender_email: str, mx_servers: List[str], port
         if not hasattr(server, 'expn'):
             server.quit()
             return EmailVerificationResult(
-                system_id="1.0.6",
+                system_id="1.0.7",
                 email=email,
                 message="EXPN not supported",
                 status=False,
@@ -226,7 +228,7 @@ def verify_email_expn(email: str, sender_email: str, mx_servers: List[str], port
         )
         
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             smtplib_code=250,
             method_code=code,
@@ -239,7 +241,7 @@ def verify_email_expn(email: str, sender_email: str, mx_servers: List[str], port
     except (smtplib.SMTPException, ConnectionError, TimeoutError) as e:
         logger.error(f"EXPN verification failed for {email} on port {port}: {str(e)}")
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             message="SMTP connection failed",
             status=False,
@@ -270,7 +272,7 @@ def verify_email_mail_from(email: str, sender_email: str, mx_servers: List[str],
         )
         
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             smtplib_code=250,
             method_code=code,
@@ -283,7 +285,7 @@ def verify_email_mail_from(email: str, sender_email: str, mx_servers: List[str],
     except (smtplib.SMTPException, ConnectionError, TimeoutError) as e:
         logger.error(f"MAIL FROM / RCPT TO verification failed for {email} on port {port}: {str(e)}")
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             message="SMTP connection failed",
             status=False,
@@ -303,7 +305,7 @@ def verify_email_web_auth(email: str) -> EmailVerificationResult:
         )
         logger.error(error_msg)
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             message="Web auth configuration missing",
             status=False,
@@ -330,7 +332,7 @@ def verify_email_web_auth(email: str) -> EmailVerificationResult:
         # Check for 'body' and 'exists' in response
         if "body" not in data or "exists" not in data["body"]:
             return EmailVerificationResult(
-                system_id="1.0.6",
+                system_id="1.0.7",
                 email=email,
                 message="Invalid API response format",
                 status=False,
@@ -347,7 +349,7 @@ def verify_email_web_auth(email: str) -> EmailVerificationResult:
             data_text += f", alternatives={alternatives}"
         
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             message=message_text,
             status=status,
@@ -359,7 +361,7 @@ def verify_email_web_auth(email: str) -> EmailVerificationResult:
     except requests.RequestException as e:
         logger.error(f"Web auth verification failed for {email}: {str(e)}")
         return EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             message="Web auth request failed",
             status=False,
@@ -384,7 +386,7 @@ def verify_email(email: str, sender_email: str = "info@yourdomain.com", ports: L
 
     if not domain_valid:
         results.append(EmailVerificationResult(
-            system_id="1.0.6",
+            system_id="1.0.7",
             email=email,
             message="Invalid domain",
             status=False,

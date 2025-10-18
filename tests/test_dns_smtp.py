@@ -6,7 +6,7 @@ from typing import List, Tuple
 from email_verifier import verify_email_domain, verify_email_syntax, verify_email, verify_email_rcpt, verify_email_vrfy, verify_email_expn, verify_email_mail_from, verify_email_web_auth
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def check_mx_records(email: str) -> Tuple[bool, List[str]]:

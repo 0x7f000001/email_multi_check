@@ -11,6 +11,10 @@ This package provides functions to validate email syntax, check domain MX record
 
 Key features:
 - Syntax validation using a RFC 5322-compliant regex.
+    <details>
+    <summary>Regulex visualize:</summary>
+    
+    <details>
 - DNS MX record verification with IDNA support.
 - SMTP verification using four methods: RCPT, VRFY, EXPN, and MAIL FROM / RCPT TO.
 - Web-based verification for configured domains, using external configuration files for URLs and request parameters.

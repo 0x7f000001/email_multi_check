@@ -13,8 +13,8 @@ Key features:
 - Syntax validation using a RFC 5322-compliant regex.
     <details>
     <summary>Regulex visualize:</summary>
-    
-    <details>
+    <img width="1288" height="318" alt="Без названия (1)" src="https://github.com/user-attachments/assets/d66e985d-3cdc-46bf-b7a8-4e52d9bcca22" />
+    </details>
 - DNS MX record verification with IDNA support.
 - SMTP verification using four methods: RCPT, VRFY, EXPN, and MAIL FROM / RCPT TO.
 - Web-based verification for configured domains, using external configuration files for URLs and request parameters.

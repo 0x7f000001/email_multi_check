@@ -948,7 +948,24 @@ When a mailbox exists but is full and cannot receive mail:
 <summary>Example True(quote expired):</summary>
 
 ```python
-
+{
+  "system_id": "1.0.7",
+  "email": "noquote@gmail.com",
+  "message": "Quota expired!",
+  "status": true,
+  "MX": [
+    "alt1.gmail-smtp-in.l.google.com.",
+    "alt3.gmail-smtp-in.l.google.com.",
+    "gmail-smtp-in.l.google.com.",
+    "alt2.gmail-smtp-in.l.google.com.",
+    "alt4.gmail-smtp-in.l.google.com."
+  ],
+  "smtplib_code": 250,
+  "method_code": 452,
+  "method": "rcpt",
+  "web_auth_code": null,
+  "data": "RCPT code: 452, port: 25"
+}
 ```
 </details>
 

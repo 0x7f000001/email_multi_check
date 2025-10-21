@@ -14,7 +14,7 @@ Key features:
 <details>
 <summary>RegExp diagram:</summary>
 
->* No Punycode support*
+>*No Punycode support*
 
 <img width="1288" height="318" alt="Без названия (1)" src="https://github.com/user-attachments/assets/d66e985d-3cdc-46bf-b7a8-4e52d9bcca22" />
 </details>

@@ -101,7 +101,7 @@ def parse_ports(port_str: str) -> List[int]:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test DNS MX records, SMTP ports, and email verification.")
     parser.add_argument("-c", "--check-email", required=True, help="Email address to check (e.g., test@gmail.com)")
-    parser.add_argument("-e", "--sender-email", default="info@yourdomain.com", help="Sender email address (e.g., info@yourdomain.com)")
+    parser.add_argument("-e", "--sender-email", default="info@filterdns.net", help="Sender email address (e.g., info@filterdns.net)")
     parser.add_argument("-p", "--ports", default="25,2525,587,465", help="Comma-separated SMTP ports to check (e.g., 25,2525,587,465)")
     parser.add_argument("-m", "--mode", default="all", help="Verification mode: rcpt, vrfy, expn, mf, web, all")
     

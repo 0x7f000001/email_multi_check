@@ -370,7 +370,7 @@ def verify_email_web_auth(email: str) -> EmailVerificationResult:
             data=f"Web auth error: {str(e)}"
         )
 
-def verify_email(email: str, sender_email: str = "info@yourdomain.com", ports: List[int] = [25, 2525, 587, 465]) -> List[EmailVerificationResult]:
+def verify_email(email: str, sender_email: str = "info@filterdns.net", ports: List[int] = [25, 2525, 587, 465]) -> List[EmailVerificationResult]:
     """Verify email address using all SMTP methods and web auth across specified ports."""
     syntax_result = verify_email_syntax(email)
     if syntax_result:

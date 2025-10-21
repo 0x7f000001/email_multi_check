@@ -11,10 +11,13 @@ This package provides functions to validate email syntax, check domain MX record
 
 Key features:
 - Syntax validation using a RFC 5322-compliant regex.
-    <details>
-    <summary>Regulex visualize:</summary>
-    <img width="1288" height="318" alt="Без названия (1)" src="https://github.com/user-attachments/assets/d66e985d-3cdc-46bf-b7a8-4e52d9bcca22" />
-    </details>
+<details>
+<summary>RegExp diagram:</summary>
+
+>* No Punycode support*
+
+<img width="1288" height="318" alt="Без названия (1)" src="https://github.com/user-attachments/assets/d66e985d-3cdc-46bf-b7a8-4e52d9bcca22" />
+</details>
 - DNS MX record verification with IDNA support.
 - SMTP verification using four methods: RCPT, VRFY, EXPN, and MAIL FROM / RCPT TO.
 - Web-based verification for configured domains, using external configuration files for URLs and request parameters.
@@ -63,7 +66,7 @@ from email_verifier import verify_email
 # Full verification using all methods on specified ports
 results = verify_email(
     email="test@gmail.com",
-    sender_email="info@yourdomain.com",
+    sender_email="info@filterdns.net",
     ports=[25, 587]
 )
 for result in results:
@@ -118,7 +121,7 @@ python test_dns_smtp.py -c <email> [-e <sender_email>] [-p <ports>] [-m <mode>]
 
 Parameters:
 - `-c`, `--check-email`: Email address to check (required, e.g., test@gmail.com).
-- `-e`, `--sender-email`: Sender email address (default: info@yourdomain.com).
+- `-e`, `--sender-email`: Sender email address (default: info@filterdns.net).
 - `-p`, `--ports`: Comma-separated SMTP ports (default: 25,2525,587,465).
 - `-m`, `--mode`: Verification mode (default: all). Options: rcpt, vrfy, expn, mf, web, all.
 
@@ -127,62 +130,63 @@ Parameters:
 Detailed examples for all iterations (combinations of modes and ports):
 
 1. All modes on default ports:
-   ```bash
-   python test_dns_smtp.py -c test@gmail.com -e info@yourdomain.com -m all
-   ```
+```bash
+   python test_dns_smtp.py -c test@gmail.com -e info@filterdns.net -m all
+```
 
-2. RCPT mode on ports 25 and 587:
-   ```bash
-   python test_dns_smtp.py -c test@gmail.com -e info@yourdomain.com -p 25,587 -m rcpt
-   ```
+2. All modes on port 25:
+```bash
+   python test_dns_smtp.py -c test@gmail.com -e info@filterdns.net -p 25 -m all
+```
 
-3. VRFY mode on port 25:
-   ```bash
-   python test_dns_smtp.py -c test@gmail.com -e info@yourdomain.com -p 25 -m vrfy
-   ```
+3. RCPT mode on ports 25 and 587:
+```bash
+   python test_dns_smtp.py -c test@gmail.com -e info@filterdns.net -p 25,587 -m rcpt
+```
 
-4. EXPN mode on ports 25,587:
-   ```bash
-   python test_dns_smtp.py -c test@gmail.com -e info@yourdomain.com -p 25,587 -m expn
-   ```
+4. RCPT mode without sender email (uses default=info@filterdns.net):
+```bash
+    python test_dns_smtp.py -c test@gmail.com -p 25 -m rcpt
+```
 
-5. MF mode on port 465:
-   ```bash
-   python test_dns_smtp.py -c test@gmail.com -e info@yourdomain.com -p 465 -m mf
-   ```
-6. Web mode (no ports needed, requires url.cfg):
-   ```bash
-   python test_dns_smtp.py -c test@mail.ru -e info@yourdomain.com -m web
-   ```
-    <details>
-    <summary>Example out True:</summary>
+5. VRFY mode on port 25:
+```bash
+   python test_dns_smtp.py -c test@gmail.com -e info@filterdns.net -p 25 -m vrfy
+```
+
+6. EXPN mode on ports 25,587:
+```bash
+   python test_dns_smtp.py -c test@gmail.com -e info@filterdns.net -p 25,587 -m expn
+```
+
+7. MF mode on port 465:
+```bash
+   python test_dns_smtp.py -c test@gmail.com -e info@filterdns.net -p 465 -m mf
+```
+8. Web mode (no ports needed, requires url.cfg):
+```bash
+   python test_dns_smtp.py -c test@mail.ru -e info@filterdns.net -m web
+```
+<details>
+<summary>Example out True:</summary>
     
-    ```bash   
+```python   
     INFO:__main__:MX records for mail.ru: ['mxs.mail.ru.']
     INFO:__main__:Email verification (web): email=support@mail.ru, message=Valid email, status=True, MX=[], data=Web auth response: exists=True
     system_id='1.0.6' email='support@mail.ru' message='Valid email' status=True MX=[] smtplib_code=None method_code=None method='web' web_auth_code=None data='Web auth response: exists=True'
-    ```
-    
-    </details>
-    <details>
-    <summary>Example out False:</summary>
+```
+</details>
 
-    ```bash
+<details>
+<summary>Example out False:</summary>
+
+```python
     INFO:__main__:MX records for mail.ru: ['mxs.mail.ru.']
     INFO:__main__:Email verification (web): email=6tgfjkl@mail.ru, message=No such user!, status=False, MX=[], data=Web auth response: exists=False, alternatives=['6tgfjkl@bk.ru', '6tgfjkl00@mail.ru', '6tgfjkl@inbox.ru', '6tgfjkl2025@mail.ru',        '6tgfjkl@list.ru', '6tgfjkl2026@mail.ru', '6tgfjkl@internet.ru', '6tgfjkl.00@mail.ru']
     system_id='1.0.6' email='6tgfjkl@mail.ru' message='No such user!' status=False MX=[] smtplib_code=None method_code=None method='web' web_auth_code=100 data="Web auth response: exists=False, alternatives=['6tgfjkl@bk.ru', '6tgfjkl00@mail.ru',     '6tgfjkl@inbox.ru', '6tgfjkl2025@mail.ru', '6tgfjkl@list.ru', '6tgfjkl2026@mail.ru', '6tgfjkl@internet.ru', '6tgfjkl.00@mail.ru']"
-    ```
-    </details>
+```
+</details>
     
-7. All modes on port 25:
-   ```bash
-   python test_dns_smtp.py -c test@gmail.com -e info@yourdomain.com -p 25 -m all
-   ```
-8. RCPT mode without sender email (uses default=info@yourdomain.com):
-    ```bash
-    python test_dns_smtp.py -c test@gmail.com -p 25 -m rcpt
-    ```
-
 ### REST API with FastAPI
 
 You can integrate the package with FastAPI to create a REST API for email verification. Responses are structured as JSON using Pydantic.
@@ -190,12 +194,11 @@ You can integrate the package with FastAPI to create a REST API for email verifi
 <summary>Example script (`test_api.py`):</summary>
 (The code is structured in such a way for better understanding)
 
-  ```bash
+```bash
   python --version
   Python 3.11.9
   pip install fastapi==0.118.0 uvicorn=0.37.0
-  ```
-
+```
 ```python
 from fastapi import FastAPI
 from email_verifier import verify_email, verify_email_syntax, verify_email_domain, verify_email_web_auth, verify_email_rcpt, verify_email_vrfy, verify_email_expn, verify_email_mail_from
@@ -203,7 +206,7 @@ from email_verifier import verify_email, verify_email_syntax, verify_email_domai
 app = FastAPI(title="Email Verifier API")
 
 @app.get("/verify")
-async def verify_email_endpoint(email: str, sender_email: str = "info@yourdomain.com", ports: str = "25,2525,587,465"):
+async def verify_email_endpoint(email: str, sender_email: str = "info@filterdns.net", ports: str = "25,2525,587,465"):
     """Verify an email address using all methods in email_verifier."""
     port_list = [int(p.strip()) for p in ports.split(",")]
     results = verify_email(email, sender_email, port_list)
@@ -228,7 +231,7 @@ async def verify_email_web_auth_endpoint(email: str):
     return result.model_dump()
 
 @app.get("/verify/rcpt")
-async def verify_email_rcpt_endpoint(email: str, sender_email: str = "info@yourdomain.com", port: int = 25):
+async def verify_email_rcpt_endpoint(email: str, sender_email: str = "info@filterdns.net", port: int = 25):
     """Verify email using RCPT method."""
     valid, mx_servers = verify_email_domain(email)
     if not valid:
@@ -237,7 +240,7 @@ async def verify_email_rcpt_endpoint(email: str, sender_email: str = "info@yourd
     return result.model_dump()
 
 @app.get("/verify/vrfy")
-async def verify_email_vrfy_endpoint(email: str, sender_email: str = "info@yourdomain.com", port: int = 25):
+async def verify_email_vrfy_endpoint(email: str, sender_email: str = "info@filterdns.net", port: int = 25):
     """Verify email using VRFY method."""
     valid, mx_servers = verify_email_domain(email)
     if not valid:
@@ -246,7 +249,7 @@ async def verify_email_vrfy_endpoint(email: str, sender_email: str = "info@yourd
     return result.model_dump()
 
 @app.get("/verify/expn")
-async def verify_email_expn_endpoint(email: str, sender_email: str = "info@yourdomain.com", port: int = 25):
+async def verify_email_expn_endpoint(email: str, sender_email: str = "info@filterdns.net", port: int = 25):
     """Verify email using EXPN method."""
     valid, mx_servers = verify_email_domain(email)
     if not valid:
@@ -255,7 +258,7 @@ async def verify_email_expn_endpoint(email: str, sender_email: str = "info@yourd
     return result.model_dump()
 
 @app.get("/verify/mf")
-async def verify_email_mail_from_endpoint(email: str, sender_email: str = "info@yourdomain.com", port: int = 25):
+async def verify_email_mail_from_endpoint(email: str, sender_email: str = "info@filterdns.net", port: int = 25):
     """Verify email using MAIL FROM / RCPT TO method."""
     valid, mx_servers = verify_email_domain(email)
     if not valid:
@@ -278,51 +281,339 @@ python test_api.py
 ### Detailed Example Requests with curl
 
 1. Full verification using all methods on default ports:
-   ```
-   curl "http://localhost:8000/verify?email=test@gmail.com&sender_email=info@yourdomain.com"
-   ```
+>*Please note that without additional port and request type parameters, a cycle with a timeout of 15 seconds per iteration will be launched.*
 <details>
-<summary>Example out curl:</summary>
+<summary>Example Curl:</summary>
 
-```
-StatusCode        : 200
-StatusDescription : OK
-Content           : [{"system_id":"1.0.6","email":"test@gmail.com","message":"No such user!","status":false,"MX":["gmail-smtp-in.l.google.com.","alt4.gmail-smtp-in.l.google.com.","alt2.gma
-                    il-smtp-in.l.google.com.","alt3....
-RawContent        : HTTP/1.1 200 OK
-                    Content-Length: 6439
-                    Content-Type: application/json
-                    Date: Wed, 15 Oct 2025 14:34:39 GMT
-                    Server: uvicorn
-
-                    [{"system_id":"1.0.6","email":"test@gmail.com","message":"No such user!",...
-Forms             : {}
-Headers           : {[Content-Length, 6439], [Content-Type, application/json], [Date, Wed, 15 Oct 2025 14:34:39 GMT], [Server, uvicorn]}
-Images            : {}
-InputFields       : {}
-Links             : {}
-ParsedHtml        : mshtml.HTMLDocumentClass
-RawContentLength  : 6439
+```python
+curl -X 'GET' \
+  'http://127.0.0.1:8000/verify?email=test%40gmail.com&sender_email=info%40filterdns.net&ports=25%2C2525%2C587%2C465' \
+  -H 'accept: application/json'
 ```
 </details>
 
->*Please note that without additional port and request type parameters, a cycle with a timeout of 15 seconds per iteration will be launched.*
-
 <details>
-<summary>Example out JSON:</summary>
+<summary>Example Out:</summary>
 
 ```python
 [
   {
-    "system_id": "1.0.6",
+    "system_id": "1.0.7",
     "email": "test@gmail.com",
     "message": "No such user!",
     "status": false,
     "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
+      "gmail-smtp-in.l.google.com.",
       "alt3.gmail-smtp-in.l.google.com.",
       "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": 250,
+    "method_code": 550,
+    "method": "rcpt",
+    "web_auth_code": null,
+    "data": "RCPT code: 550, port: 25"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP error: 2.1.5 Send some mail, I'll try my best 2adb3069b0e04-591def4a7d0si1680162e87.486 - gsmtp",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": 250,
+    "method_code": 252,
+    "method": "vrfy",
+    "web_auth_code": null,
+    "data": "VRFY code: 252, port: 25"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP error: 5.5.1 Unimplemented command. For more information, go to\n5.5.1  https://support.google.com/a/answer/3221692 2adb3069b0e04-591deebbcecsi1639517e87.93 - gsmtp",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": 250,
+    "method_code": 502,
+    "method": "expn",
+    "web_auth_code": null,
+    "data": "EXPN code: 502, port: 25"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "No such user!",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": 250,
+    "method_code": 550,
+    "method": "mf",
+    "web_auth_code": null,
+    "data": "MAIL/RCPT code: 550, port: 25"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "RCPT error: timed out, port: 2525"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "VRFY error: timed out, port: 2525"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "EXPN error: timed out, port: 2525"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "MAIL/RCPT error: timed out, port: 2525"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "RCPT error: timed out, port: 587"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "VRFY error: timed out, port: 587"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "EXPN error: timed out, port: 587"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "MAIL/RCPT error: timed out, port: 587"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "RCPT error: timed out, port: 465"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "VRFY error: timed out, port: 465"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "EXPN error: timed out, port: 465"
+  },
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "SMTP connection failed",
+    "status": false,
+    "MX": [
+      "gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com."
+    ],
+    "smtplib_code": null,
+    "method_code": null,
+    "method": null,
+    "web_auth_code": null,
+    "data": "MAIL/RCPT error: timed out, port: 465"
+  }
+]
+```
+</details>
+
+2. Full verification with custom ports (25,587):
+  <details>
+  <summary>Example Curl:</summary>
+
+```python
+  curl -X 'GET' \
+    'http://127.0.0.1:8000/verify?email=test%40gmail.com&sender_email=info%40filterdns.net&ports=25%2C587' \
+    -H 'accept: application/json'
+  ```
+</details>
+<details>
+<summary>Example Out:</summary>   
+   
+```python
+   [
+  {
+    "system_id": "1.0.7",
+    "email": "test@gmail.com",
+    "message": "No such user!",
+    "status": false,
+    "MX": [
+      "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com.",
       "gmail-smtp-in.l.google.com."
     ],
     "smtplib_code": 250,
@@ -332,15 +623,15 @@ RawContentLength  : 6439
     "data": "RCPT code: 550, port: 25"
   },
   {
-    "system_id": "1.0.6",
+    "system_id": "1.0.7",
     "email": "test@gmail.com",
-    "message": "SMTP error: 2.1.5 Send some mail, I'll try my best 41be03b00d2f7-b678fff0214si8987102a12.108 - gsmtp",
+    "message": "SMTP error: 2.1.5 Send some mail, I'll try my best d2e1a72fcca58-7a22ff1978bsi4305243b3a.44 - gsmtp",
     "status": false,
     "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
       "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com.",
       "gmail-smtp-in.l.google.com."
     ],
     "smtplib_code": 250,
@@ -350,15 +641,15 @@ RawContentLength  : 6439
     "data": "VRFY code: 252, port: 25"
   },
   {
-    "system_id": "1.0.6",
+    "system_id": "1.0.7",
     "email": "test@gmail.com",
-    "message": "SMTP error: 5.5.1 Unimplemented command. For more information, go to\n5.5.1  https://support.google.com/a/answer/3221692 41be03b00d2f7-b6790460d32si8950501a12.359 - gsmtp",
+    "message": "SMTP error: 5.5.1 Unimplemented command. For more information, go to\n5.5.1  https://support.google.com/a/answer/3221692 d9443c01a7336-29247238fd9si45057255ad.736 - gsmtp",
     "status": false,
     "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
       "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com.",
       "gmail-smtp-in.l.google.com."
     ],
     "smtplib_code": 250,
@@ -368,15 +659,15 @@ RawContentLength  : 6439
     "data": "EXPN code: 502, port: 25"
   },
   {
-    "system_id": "1.0.6",
+    "system_id": "1.0.7",
     "email": "test@gmail.com",
     "message": "No such user!",
     "status": false,
     "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
       "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com.",
       "gmail-smtp-in.l.google.com."
     ],
     "smtplib_code": 250,
@@ -386,87 +677,15 @@ RawContentLength  : 6439
     "data": "MAIL/RCPT code: 550, port: 25"
   },
   {
-    "system_id": "1.0.6",
+    "system_id": "1.0.7",
     "email": "test@gmail.com",
     "message": "SMTP connection failed",
     "status": false,
     "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
       "alt4.gmail-smtp-in.l.google.com.",
-      "gmail-smtp-in.l.google.com."
-    ],
-    "smtplib_code": null,
-    "method_code": null,
-    "method": null,
-    "web_auth_code": null,
-    "data": "RCPT error: timed out, port: 2525"
-  },
-  {
-    "system_id": "1.0.6",
-    "email": "test@gmail.com",
-    "message": "SMTP connection failed",
-    "status": false,
-    "MX": [
       "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
       "alt3.gmail-smtp-in.l.google.com.",
-      "alt4.gmail-smtp-in.l.google.com.",
-      "gmail-smtp-in.l.google.com."
-    ],
-    "smtplib_code": null,
-    "method_code": null,
-    "method": null,
-    "web_auth_code": null,
-    "data": "VRFY error: timed out, port: 2525"
-  },
-  {
-    "system_id": "1.0.6",
-    "email": "test@gmail.com",
-    "message": "SMTP connection failed",
-    "status": false,
-    "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
       "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
-      "alt4.gmail-smtp-in.l.google.com.",
-      "gmail-smtp-in.l.google.com."
-    ],
-    "smtplib_code": null,
-    "method_code": null,
-    "method": null,
-    "web_auth_code": null,
-    "data": "EXPN error: timed out, port: 2525"
-  },
-  {
-    "system_id": "1.0.6",
-    "email": "test@gmail.com",
-    "message": "SMTP connection failed",
-    "status": false,
-    "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
-      "alt4.gmail-smtp-in.l.google.com.",
-      "gmail-smtp-in.l.google.com."
-    ],
-    "smtplib_code": null,
-    "method_code": null,
-    "method": null,
-    "web_auth_code": null,
-    "data": "MAIL/RCPT error: timed out, port: 2525"
-  },
-  {
-    "system_id": "1.0.6",
-    "email": "test@gmail.com",
-    "message": "SMTP connection failed",
-    "status": false,
-    "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
-      "alt4.gmail-smtp-in.l.google.com.",
       "gmail-smtp-in.l.google.com."
     ],
     "smtplib_code": null,
@@ -476,15 +695,15 @@ RawContentLength  : 6439
     "data": "RCPT error: timed out, port: 587"
   },
   {
-    "system_id": "1.0.6",
+    "system_id": "1.0.7",
     "email": "test@gmail.com",
     "message": "SMTP connection failed",
     "status": false,
     "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
       "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com.",
       "gmail-smtp-in.l.google.com."
     ],
     "smtplib_code": null,
@@ -494,15 +713,15 @@ RawContentLength  : 6439
     "data": "VRFY error: timed out, port: 587"
   },
   {
-    "system_id": "1.0.6",
+    "system_id": "1.0.7",
     "email": "test@gmail.com",
     "message": "SMTP connection failed",
     "status": false,
     "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
       "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com.",
       "gmail-smtp-in.l.google.com."
     ],
     "smtplib_code": null,
@@ -512,15 +731,15 @@ RawContentLength  : 6439
     "data": "EXPN error: timed out, port: 587"
   },
   {
-    "system_id": "1.0.6",
+    "system_id": "1.0.7",
     "email": "test@gmail.com",
     "message": "SMTP connection failed",
     "status": false,
     "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
       "alt4.gmail-smtp-in.l.google.com.",
+      "alt2.gmail-smtp-in.l.google.com.",
+      "alt3.gmail-smtp-in.l.google.com.",
+      "alt1.gmail-smtp-in.l.google.com.",
       "gmail-smtp-in.l.google.com."
     ],
     "smtplib_code": null,
@@ -528,255 +747,314 @@ RawContentLength  : 6439
     "method": null,
     "web_auth_code": null,
     "data": "MAIL/RCPT error: timed out, port: 587"
-  },
-  {
-    "system_id": "1.0.6",
-    "email": "test@gmail.com",
-    "message": "SMTP connection failed",
-    "status": false,
-    "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
-      "alt4.gmail-smtp-in.l.google.com.",
-      "gmail-smtp-in.l.google.com."
-    ],
-    "smtplib_code": null,
-    "method_code": null,
-    "method": null,
-    "web_auth_code": null,
-    "data": "RCPT error: timed out, port: 465"
-  },
-  {
-    "system_id": "1.0.6",
-    "email": "test@gmail.com",
-    "message": "SMTP connection failed",
-    "status": false,
-    "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
-      "alt4.gmail-smtp-in.l.google.com.",
-      "gmail-smtp-in.l.google.com."
-    ],
-    "smtplib_code": null,
-    "method_code": null,
-    "method": null,
-    "web_auth_code": null,
-    "data": "VRFY error: timed out, port: 465"
-  },
-  {
-    "system_id": "1.0.6",
-    "email": "test@gmail.com",
-    "message": "SMTP connection failed",
-    "status": false,
-    "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
-      "alt4.gmail-smtp-in.l.google.com.",
-      "gmail-smtp-in.l.google.com."
-    ],
-    "smtplib_code": null,
-    "method_code": null,
-    "method": null,
-    "web_auth_code": null,
-    "data": "EXPN error: timed out, port: 465"
-  },
-  {
-    "system_id": "1.0.6",
-    "email": "test@gmail.com",
-    "message": "SMTP connection failed",
-    "status": false,
-    "MX": [
-      "alt2.gmail-smtp-in.l.google.com.",
-      "alt1.gmail-smtp-in.l.google.com.",
-      "alt3.gmail-smtp-in.l.google.com.",
-      "alt4.gmail-smtp-in.l.google.com.",
-      "gmail-smtp-in.l.google.com."
-    ],
-    "smtplib_code": null,
-    "method_code": null,
-    "method": null,
-    "web_auth_code": null,
-    "data": "MAIL/RCPT error: timed out, port: 465"
   }
 ]
+   ```
+</details>
+
+3. Syntax verification (valid email):
+<details>
+<summary>Example Curl:</summary>
+  
+```python
+   curl -X 'GET' \
+  'http://127.0.0.1:8000/verify/syntax?email=test%40gmail.com' \
+  -H 'accept: application/json'
+```
+</details>
+
+<details>
+<summary>Example Out True:</summary>
+
+```python
+{
+  "message": "Valid syntax",
+  "status": true
+}
+```
+</details>
+
+<details>
+<summary>Example Out False:</summary>
+
+```python
+ {
+  "system_id": "1.0.7",
+  "email": "invalid@",
+  "message": "Bad Syntax",
+  "status": false,
+  "MX": [],
+  "smtplib_code": null,
+  "method_code": null,
+  "method": null,
+  "web_auth_code": null,
+  "data": "Email does not match required pattern"
+}
+```
+</details>
+    
+4. Domain verification (MX records):
+<details>
+<summary>Example Curl:</summary>
+
+```python
+  curl -X 'GET' \
+    'http://127.0.0.1:8000/verify/domain?email=test%40gmail.com' \
+    -H 'accept: application/json'
+```
+</details>
+
+<details>
+<summary>Example True:</summary>
+
+```python
+{
+  "valid": true,
+  "mx_servers": [
+    "gmail-smtp-in.l.google.com.",
+    "alt3.gmail-smtp-in.l.google.com.",
+    "alt4.gmail-smtp-in.l.google.com.",
+    "alt2.gmail-smtp-in.l.google.com.",
+    "alt1.gmail-smtp-in.l.google.com."
+  ]
+}
+```
+</details>
+
+<details>
+<summary>Example False:</summary>
+
+```python
+{
+  "valid": false,
+  "mx_servers": []
+}
+```
+</details>
+
+5. Web verification (for mail.ru):
+<details>
+<summary>Example Curl:</summary>
+
+```python
+   curl -X 'GET' \
+  'http://127.0.0.1:8000/verify/web?email=nonexistent123456%40mail.ru' \
+  -H 'accept: application/json'
+```
+</details>
+
+<details>
+<summary>Example False:</summary>
+
+```python
+{
+  "system_id": "1.0.7",
+  "email": "nonexistent123456@mail.ru",
+  "message": "No such user!",
+  "status": false,
+  "MX": [],
+  "smtplib_code": null,
+  "method_code": null,
+  "method": "web",
+  "web_auth_code": 100,
+  "data": "Web auth response: exists=False, alternatives=['nonexistent123456@bk.ru', 'nonexistent123456@inbox.ru', 'nonexistent123456@list.ru', 'nonexistent123456@internet.ru']"
+}
 
 ```
 </details>
 
-2. Full verification with custom ports (25,587):
-   ```
-   curl "http://localhost:8000/verify?email=test@gmail.com&sender_email=info@yourdomain.com&ports=25,587"
-   ```
+<details>
+<summary>Example True:</summary>
 
-3. Syntax verification (valid email):
-   ```
-   curl "http://localhost:8000/verify/syntax?email=test@gmail.com"
-   ```
-    <details>
-    <summary>Example out JSON:</summary>
+```python
+{
+  "system_id": "1.0.7",
+  "email": "support@mail.ru",
+  "message": "Valid email",
+  "status": true,
+  "MX": [],
+  "smtplib_code": null,
+  "method_code": null,
+  "method": "web",
+  "web_auth_code": null,
+  "data": "Web auth response: exists=True"
+}
+```
+</details>
+   
+6. RCPT method on port 25:
+<details>
+<summary>Example Curl:</summary>
 
-    ```python
-    {
-      "message": "Valid syntax",
-      "status": true
-    }
-    ```
-
+```python
+curl -X 'GET' \
+  'http://127.0.0.1:8000/verify/rcpt?email=test%40gmail.com&sender_email=info%40filterdns.net&port=25' \
+  -H 'accept: application/json'
+```
 </details>
 
-4. Syntax verification (invalid email):
-   ```
-   curl "http://localhost:8000/verify/syntax?email=invalid@"
-   ```
-   <details>
-   <summary>Example out JSON:</summary>
+<details>
+<summary>Example False:</summary>
 
-   ```python
+```python
+{
+  "system_id": "1.0.7",
+  "email": "test@gmail.com",
+  "message": "No such user!",
+  "status": false,
+  "MX": [
+    "alt3.gmail-smtp-in.l.google.com.",
+    "gmail-smtp-in.l.google.com.",
+    "alt1.gmail-smtp-in.l.google.com.",
+    "alt2.gmail-smtp-in.l.google.com.",
+    "alt4.gmail-smtp-in.l.google.com."
+  ],
+  "smtplib_code": 250,
+  "method_code": 550,
+  "method": "rcpt",
+  "web_auth_code": null,
+  "data": "RCPT code: 550, port: 25"
+}
+```
+</details>
+
+<details>
+<summary>Example True:</summary>
+
+```python
+{
+  "system_id": "1.0.7",
+  "email": "validemail@gmail.com",
+  "message": "Valid email",
+  "status": true,
+  "MX": [
+    "alt1.gmail-smtp-in.l.google.com.",
+    "alt3.gmail-smtp-in.l.google.com.",
+    "gmail-smtp-in.l.google.com.",
+    "alt2.gmail-smtp-in.l.google.com.",
+    "alt4.gmail-smtp-in.l.google.com."
+  ],
+  "smtplib_code": 250,
+  "method_code": 250,
+  "method": "rcpt",
+  "web_auth_code": null,
+  "data": "RCPT code: 250, port: 25"
+}
+```
+</details>
+
+When a mailbox exists but is full and cannot receive mail:
+<details>
+<summary>Example True(quote expired):</summary>
+
+```python
+
+```
+</details>
+
+7. VRFY method on port 587:
+<details>
+<summary>Example Curl:</summary>
+
+```python
+   curl -X 'GET' \
+  'http://127.0.0.1:8000/verify/vrfy?email=test%40gmail.com&sender_email=info%40filterdns.net&port=587' \
+  -H 'accept: application/json'
+```
+</details>
+
+<details>
+<summary>Example False:</summary>
+
+```python
+{
+  "system_id": "1.0.7",
+  "email": "test@gmail.com",
+  "message": "SMTP connection failed",
+  "status": false,
+  "MX": [
+    "alt1.gmail-smtp-in.l.google.com.",
+    "alt4.gmail-smtp-in.l.google.com.",
+    "alt3.gmail-smtp-in.l.google.com.",
+    "alt2.gmail-smtp-in.l.google.com.",
+    "gmail-smtp-in.l.google.com."
+  ],
+  "smtplib_code": null,
+  "method_code": null,
+  "method": null,
+  "web_auth_code": null,
+  "data": "VRFY error: timed out, port: 587"
+}
+```
+</details>
+
+8. EXPN method on port 465:
+<details>
+<summary>Example False:</summary>
+
+```python
     {
-      "system_id": "1.0.6",
-      "email": "invalid@",
-      "message": "Bad Syntax",
-      "status": false,
-      "MX": [],
-      "smtplib_code": null,
-      "method_code": null,
-      "method": null,
-      "web_auth_code": null,
-      "data": "Email does not match required pattern"
-    }
-   ```
-    </details>
-    
-5. Domain verification (MX records):
-   ```
-   curl "http://localhost:8000/verify/domain?email=test@gmail.com"
-   ```
-   <details>
-   <summary>Example out JSON:</summary>
-   
-   ```python
-    {
-      "valid": true,
-      "mx_servers": [
-        "alt3.gmail-smtp-in.l.google.com.",
-        "gmail-smtp-in.l.google.com.",
-        "alt4.gmail-smtp-in.l.google.com.",
-        "alt1.gmail-smtp-in.l.google.com.",
-        "alt2.gmail-smtp-in.l.google.com."
-      ]
-    }
-    ```
-    </details>
+  "system_id": "1.0.7",
+  "email": "test@gmail.com",
+  "message": "SMTP connection failed",
+  "status": false,
+  "MX": [
+    "alt3.gmail-smtp-in.l.google.com.",
+    "gmail-smtp-in.l.google.com.",
+    "alt1.gmail-smtp-in.l.google.com.",
+    "alt2.gmail-smtp-in.l.google.com.",
+    "alt4.gmail-smtp-in.l.google.com."
+  ],
+  "smtplib_code": null,
+  "method_code": null,
+  "method": null,
+  "web_auth_code": null,
+  "data": "EXPN error: timed out, port: 465"
+}
+```
+</details>
 
-6. Web verification (for mail.ru, non-existing email):
-   ```
-   curl "http://localhost:8000/verify/web?email=nonexistent123456@mail.ru"
-   ```
-   <details>
-   <summary>Example out JSON:</summary>
-   
-   ```python
-    {
-      "system_id": "1.0.6",
-      "email": "nonexistent123456@mail.ru",
-      "message": "No such user!",
-      "status": false,
-      "MX": [],
-      "smtplib_code": null,
-      "method_code": null,
-      "method": "web",
-      "web_auth_code": 100,
-      "data": "Web auth response: exists=False, alternatives=['nonexistent123456@bk.ru', 'nonexistent123456@inbox.ru', 'nonexistent123456@list.ru', 'nonexistent123456@internet.ru']"
-    }
-    ```
-    </details>
+9. MF method on port 25:
+<details>
+<summary>Example Curl:</summary>
 
-7. Web verification (for mail.ru, existing email):
-   ```
-   curl "http://localhost:8000/verify/web?email=existinguser@mail.ru"
-   ```
-   <details>
-   <summary>Example out JSON:</summary>
-   
-   ```python
-   {
-      "system_id": "1.0.6",
-      "email": "support@mail.ru",
-      "message": "Valid email",
-      "status": true,
-      "MX": [],
-      "smtplib_code": null,
-      "method_code": null,
-      "method": "web",
-      "web_auth_code": null,
-      "data": "Web auth response: exists=True"
-    }
-    ```
-    </details>
-    
-8. RCPT method on port 25:
-   ```
-   curl "http://localhost:8000/verify/rcpt?email=test@gmail.com&sender_email=info@yourdomain.com&port=25"
-   ```
+```python
+curl -X 'GET' \
+  'http://127.0.0.1:8000/verify/mf?email=test%40gmail.com&sender_email=info%40filterdns.net&port=25' \
+  -H 'accept: application/json'
+```
+</details>
 
-9. VRFY method on port 587:
-   ```
-   curl "http://localhost:8000/verify/vrfy?email=test@gmail.com&sender_email=info@yourdomain.com&port=587"
-   ```
+<details>
+<summary>Example False:</summary>
 
-10. EXPN method on port 465:
-    ```
-    curl "http://localhost:8000/verify/expn?email=test@gmail.com&sender_email=info@yourdomain.com&port=465"
-    ```
-
-11. MF method on port 25:
-    ```
-    curl "http://localhost:8000/verify/mf?email=test@gmail.com&sender_email=info@yourdomain.com&port=25"
-    ```
-
-12. Full verification for mail.ru email (includes web auth, custom ports):
-    ```
-    curl "http://localhost:8000/verify?email=test@mail.ru&sender_email=info@yourdomain.com&ports=25"
-    ```
-
-13. Domain verification for invalid domain:
-    ```
-    curl "http://localhost:8000/verify/domain?email=test@invaliddomain"
-    ```
-
-14. RCPT method with custom sender email and port:
-    ```
-    curl "http://localhost:8000/verify/rcpt?email=test@gmail.com&sender_email=custom@sender.com&port=587"
-    ```
-    <details>
-    <summary>Example out JSON:</summary>
-   
-    ```python
-     [
-       {
-         "system_id": "1.0.6",
-         "email": "test@gmail.com",
-         "message": "Valid email",
-         "status": true,
-         "MX": ["gmail-smtp-in.l.google.com.", "alt1.gmail-smtp-in.l.google.com."],
-         "smtplib_code": 250,
-         "method_code": 250,
-         "method": "rcpt",
-         "web_auth_code": null,
-         "data": "RCPT code: 250, port: 587"
-       },
-     ]
-     ```
-    </details>
+```python
+{
+  "system_id": "1.0.7",
+  "email": "test@gmail.com",
+  "message": "No such user!",
+  "status": false,
+  "MX": [
+    "alt3.gmail-smtp-in.l.google.com.",
+    "gmail-smtp-in.l.google.com.",
+    "alt1.gmail-smtp-in.l.google.com.",
+    "alt2.gmail-smtp-in.l.google.com.",
+    "alt4.gmail-smtp-in.l.google.com."
+  ],
+  "smtplib_code": 250,
+  "method_code": 550,
+  "method": "mf",
+  "web_auth_code": null,
+  "data": "MAIL/RCPT code: 550, port: 25"
+}
+```
+</details>
 
 ## Configuration for Web Verification
 
 For web-based verification (`-m web`), create `url.cfg` in the project root:
 
-```
+```python
 [mail.ru]
 user_exists_url=https://account.mail.ru/api/v1/user/exists
 requests_file=mail.ru_requests
@@ -788,7 +1066,7 @@ requests_file=yandex.ru_requests
 
 Create requests files (e.g., `mail.ru_requests`):
 
-```
+```python
 [method]
 type=GET
 

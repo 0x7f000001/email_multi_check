@@ -4,7 +4,7 @@ from email_verifier import verify_email, verify_email_syntax, verify_email_domai
 app = FastAPI(title="Email Verifier API")
 
 @app.get("/verify")
-async def verify_email_endpoint(email: str, sender_email: str = "info@yourdomain.com", ports: str = "25,2525,587,465"):
+async def verify_email_endpoint(email: str, sender_email: str = "info@filterdns.net", ports: str = "25,2525,587,465"):
     """Verify an email address using all methods in email_verifier."""
     port_list = [int(p.strip()) for p in ports.split(",")]
     results = verify_email(email, sender_email, port_list)
@@ -29,7 +29,7 @@ async def verify_email_web_auth_endpoint(email: str):
     return result.model_dump()
 
 @app.get("/verify/rcpt")
-async def verify_email_rcpt_endpoint(email: str, sender_email: str = "info@yourdomain.com", port: int = 25):
+async def verify_email_rcpt_endpoint(email: str, sender_email: str = "info@filterdns.net", port: int = 25):
     """Verify email using RCPT method."""
     valid, mx_servers = verify_email_domain(email)
     if not valid:
@@ -38,7 +38,7 @@ async def verify_email_rcpt_endpoint(email: str, sender_email: str = "info@yourd
     return result.model_dump()
 
 @app.get("/verify/vrfy")
-async def verify_email_vrfy_endpoint(email: str, sender_email: str = "info@yourdomain.com", port: int = 25):
+async def verify_email_vrfy_endpoint(email: str, sender_email: str = "info@filterdns.net", port: int = 25):
     """Verify email using VRFY method."""
     valid, mx_servers = verify_email_domain(email)
     if not valid:
@@ -47,7 +47,7 @@ async def verify_email_vrfy_endpoint(email: str, sender_email: str = "info@yourd
     return result.model_dump()
 
 @app.get("/verify/expn")
-async def verify_email_expn_endpoint(email: str, sender_email: str = "info@yourdomain.com", port: int = 25):
+async def verify_email_expn_endpoint(email: str, sender_email: str = "info@filterdns.net", port: int = 25):
     """Verify email using EXPN method."""
     valid, mx_servers = verify_email_domain(email)
     if not valid:
@@ -56,7 +56,7 @@ async def verify_email_expn_endpoint(email: str, sender_email: str = "info@yourd
     return result.model_dump()
 
 @app.get("/verify/mf")
-async def verify_email_mail_from_endpoint(email: str, sender_email: str = "info@yourdomain.com", port: int = 25):
+async def verify_email_mail_from_endpoint(email: str, sender_email: str = "info@filterdns.net", port: int = 25):
     """Verify email using MAIL FROM / RCPT TO method."""
     valid, mx_servers = verify_email_domain(email)
     if not valid:

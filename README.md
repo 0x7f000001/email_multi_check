@@ -61,7 +61,7 @@ Example for full verification:
 (You can control which mailbox the request will be sent from.)
 
 ```python
-from email_verifier import verify_email
+from email_multi_check import verify_email
 
 # Full verification using all methods on specified ports
 results = verify_email(
@@ -77,7 +77,7 @@ Example for syntax verification:
 (Uses an improved email regular expression pattern (improved to be more RFC 5322 compliant))
 
 ```python
-from email_verifier import verify_email_syntax
+from email_multi_check import verify_email_syntax
 
 # Syntax verification
 result = verify_email_syntax("test@gmail.com")
@@ -91,7 +91,7 @@ Example for domain verification:
 (Checking for IDNA encoding errors for a domain and checking the MX records)
 
 ```python
-from email_verifier import verify_email_domain
+from email_multi_check import verify_email_domain
 
 # Domain verification
 valid, mx_servers = verify_email_domain("test@gmail.com")
@@ -102,7 +102,7 @@ Example for web-based verification (requires url.cfg):
 (Verify email existence via web API specified)
 
 ```python
-from email_verifier import verify_email_web_auth
+from email_multi_check import verify_email_web_auth
 
 # Web-based verification
 result = verify_email_web_auth("test@mail.ru")
@@ -201,13 +201,13 @@ You can integrate the package with FastAPI to create a REST API for email verifi
 ```
 ```python
 from fastapi import FastAPI
-from email_verifier import verify_email, verify_email_syntax, verify_email_domain, verify_email_web_auth, verify_email_rcpt, verify_email_vrfy, verify_email_expn, verify_email_mail_from
+from email_multi_check import verify_email, verify_email_syntax, verify_email_domain, verify_email_web_auth, verify_email_rcpt, verify_email_vrfy, verify_email_expn, verify_email_mail_from
 
 app = FastAPI(title="Email Multi Check API")
 
 @app.get("/verify")
 async def verify_email_endpoint(email: str, sender_email: str = "info@filterdns.net", ports: str = "25,2525,587,465"):
-    """Verify an email address using all methods in email_verifier."""
+    """Verify an email address using all methods in email_multi_check."""
     port_list = [int(p.strip()) for p in ports.split(",")]
     results = verify_email(email, sender_email, port_list)
     return [result.model_dump() for result in results]

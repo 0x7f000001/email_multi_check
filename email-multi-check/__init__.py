@@ -1,4 +1,4 @@
-from .email_verifier import (
+from .email_multi_check import (
     verify_email,
     verify_email_domain,
     verify_email_syntax,

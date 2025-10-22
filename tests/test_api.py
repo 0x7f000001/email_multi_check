@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from email_verifier import (
+from email_multi_check import (
     verify_email,
     verify_email_syntax,
     verify_email_domain,

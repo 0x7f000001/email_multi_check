@@ -1,7 +1,7 @@
 
 ![Снимок](https://github.com/user-attachments/assets/e0626c69-0ba9-4ad2-be2b-94882a5cc026)
 
-# Email Verifier
+# Email Multi Check
 
 A Python package for verifying email addresses using DNS MX record checks, SMTP methods (RCPT, VRFY, EXPN, MAIL FROM / RCPT TO with RSET), and web-based authentication checks for specific providers like mail.ru.
 
@@ -29,13 +29,13 @@ Key features:
 Install the package via pip from the wheel file or source:
 
 ```bash
-pip install email-verifier
+pip install email-multi-check
 ```
 
 Or from source:
 
 ```bash
-pip install .\dist\email_verifier-1.0.6-py3-none-any.whl
+pip install .\dist\email-multi-check-1.0.7-py3-none-any.whl
 ```
 
 ## Dependencies
@@ -203,7 +203,7 @@ You can integrate the package with FastAPI to create a REST API for email verifi
 from fastapi import FastAPI
 from email_verifier import verify_email, verify_email_syntax, verify_email_domain, verify_email_web_auth, verify_email_rcpt, verify_email_vrfy, verify_email_expn, verify_email_mail_from
 
-app = FastAPI(title="Email Verifier API")
+app = FastAPI(title="Email Multi Check API")
 
 @app.get("/verify")
 async def verify_email_endpoint(email: str, sender_email: str = "info@filterdns.net", ports: str = "25,2525,587,465"):

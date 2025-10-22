@@ -3,7 +3,7 @@ import smtplib
 import argparse
 import os
 from typing import List, Tuple
-from email_verifier import (
+from email_multi_check import (
     verify_email_domain,
     verify_email_syntax,
     verify_email,

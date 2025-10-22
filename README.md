@@ -197,7 +197,7 @@ You can integrate the package with FastAPI to create a REST API for email verifi
 ```bash
   python --version
   Python 3.11.9
-  pip install fastapi==0.118.0 uvicorn=0.37.0
+  pip install fastapi==0.118.0 uvicorn==0.37.0
 ```
 ```python
 from fastapi import FastAPI

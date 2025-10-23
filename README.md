@@ -35,7 +35,7 @@ pip install email-multi-check
 Or from source:
 
 ```bash
-pip install .\dist\email-multi-check-1.0.7-py3-none-any.whl
+pip install .\dist\email_multi_check-1.0.7-py3-none-any.whl
 ```
 
 ## Dependencies

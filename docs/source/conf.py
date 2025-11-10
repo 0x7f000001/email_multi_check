@@ -48,8 +48,6 @@ html_theme = "sphinx_rtd_theme"
 # The master toctree document.
 master_doc = "index"
 
-language = None
-
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 

@@ -11,9 +11,6 @@ Python 3.11 or newer.
 Installation
 ------------
 
-Many free operating system distributions have dnspython packaged for
-you, so you should check there first.
-
 The next easiest option is to use ``pip``::
     
         pip install email-multi-check

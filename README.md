@@ -7,6 +7,7 @@
 [![Forks](https://img.shields.io/github/forks/0x7f000001/email_multi_check)](https://github.com/0x7f000001/email_multi_check/network/members)
 [![Issues](https://img.shields.io/github/issues/0x7f000001/email_multi_check)](https://github.com/0x7f000001/email_multi_check/issues)
 [![Pull requests](https://img.shields.io/github/issues-pr/0x7f000001/email_multi_check)](https://github.com/0x7f000001/email_multi_check/pulls)
+
 [![Documentation Status](https://readthedocs.org/projects/email-multi-check/badge/?version=latest)](https://dnspython.readthedocs.io/en/latest/?badge=latest)
 
 A Python package for verifying email addresses using DNS MX record checks, SMTP methods (RCPT, VRFY, EXPN, MAIL FROM / RCPT TO with RSET), and web-based authentication checks for specific providers like mail.ru.
